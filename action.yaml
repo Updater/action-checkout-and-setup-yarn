@@ -1,0 +1,69 @@
+---
+name: 'checkout-and-setup-yarn'
+
+description: 'Check out the repo, set up Node and Yarn with private registry support, and then install dependencies using Yarn.'
+
+inputs:
+  auth-token:
+    description: 'Token for authenticating with GitHub Package Registry'
+    required: true
+  github-package-registry-scope:
+    description: 'Package scope to point at GitHub Package Registry. (Defaults to owner of repository where action is being used)'
+    default: ''
+  node-version:
+    description: 'Node version to force usage of. (Defaults to value found in .tool-versions, .nvmrc, or "16"'
+    required: false
+    default: ''
+
+runs:
+  using: 'composite'
+  steps:
+    - uses: actions/checkout@v2
+
+    - name: Get node version
+      id: node-version
+      run: |
+        if [ "${{ inputs.node-version }}" != "" ]; then
+          NODE_VERSION=${{ inputs.node-version }}
+        elif [ -f .tool-versions ]; then
+          NODE_VERSION=$(cat .tool-versions | grep nodejs | cut -d' ' -f2)
+        elif [ -f .nvmrc ]; then
+          NODE_VERSION=$(cat .nvmrc | tr -d 'v')
+        else
+          NODE_VERSION="16"
+        fi
+
+        echo "::set-output name=node-version::${NODE_VERSION}"
+
+    - uses: actions/setup-node@v2
+      with:
+        cache: 'yarn'
+        node-version: ${{ steps.node-version.outputs.node-version }}
+
+    - name: Get yarn cache directory path
+      id: yarn-cache-dir-path
+      run: echo "::set-output name=dir::$(yarn cache dir)"
+
+    - uses: actions/cache@v2
+      with:
+        path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
+        key: yarn-${{ hashFiles('yarn.lock') }}
+        restore-keys: |
+          yarn-
+
+    - name: setup .npmrc with private scope
+      run: |
+        AUTH_TOKEN=${{ inputs.auth-token }}
+
+        if [ "${{ inputs.github-package-registry-scope }}" != "" ]; then
+          SCOPE=${{ inputs.github-package-registry-scope }}
+        else
+          SCOPE=${{ github.repository_owner }}
+        fi
+
+        echo "//npm.pkg.github.com/:_authToken=${AUTH_TOKEN}" >> .npmrc
+        echo "@${SCOPE}:registry=https://npm.pkg.github.com/" >> .npmrc
+
+    - name: install dependencies
+      run: |
+        yarn install --frozen-lockfile --no-progress --non-interactive
