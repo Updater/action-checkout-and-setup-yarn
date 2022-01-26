@@ -1,5 +1,5 @@
 ---
-name: 'checkout-and-setup-yarn'
+name: 'Checkout and Set Up Yarn'
 
 description: 'Check out the repo, set up Node and Yarn with private registry support, and then install dependencies using Yarn.'
 
@@ -22,6 +22,7 @@ runs:
 
     - name: Get node version
       id: node-version
+      shell: bash
       run: |
         if [ "${{ inputs.node-version }}" != "" ]; then
           NODE_VERSION=${{ inputs.node-version }}
@@ -52,6 +53,7 @@ runs:
           yarn-
 
     - name: setup .npmrc with private scope
+      shell: bash
       run: |
         AUTH_TOKEN=${{ inputs.auth-token }}
 
@@ -65,5 +67,6 @@ runs:
         echo "@${SCOPE}:registry=https://npm.pkg.github.com/" >> .npmrc
 
     - name: install dependencies
+      shell: bash
       run: |
         yarn install --frozen-lockfile --no-progress --non-interactive
