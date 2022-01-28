@@ -54,21 +54,9 @@ runs:
         restore-keys: |
           yarn-
 
-    - name: setup .npmrc with private scope
-      shell: bash
-      run: |
-        AUTH_TOKEN=${{ inputs.auth-token }}
-
-        if [ "${{ inputs.github-package-registry-scope }}" != "" ]; then
-          SCOPE=${{ inputs.github-package-registry-scope }}
-        else
-          SCOPE=${{ github.repository_owner }}
-        fi
-
-        echo "//npm.pkg.github.com/:_authToken=${AUTH_TOKEN}" >> .npmrc
-        echo "@${SCOPE}:registry=https://npm.pkg.github.com/" >> .npmrc
-
     - name: install dependencies
       shell: bash
       run: |
         yarn install --frozen-lockfile --no-progress --non-interactive
+      env:
+        NODE_AUTH_TOKEN: ${{ inputs.auth-token }}
