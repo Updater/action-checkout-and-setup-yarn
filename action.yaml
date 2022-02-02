@@ -14,11 +14,17 @@ inputs:
     description: 'Node version to force usage of. (Defaults to value found in .tool-versions, .nvmrc, or "16"'
     required: false
     default: ''
+  fetch-depth:
+    description: 'Number of commits to fetch. 0 indicates all history for all branches and tags.'
+    required: false
+    default: 1
 
 runs:
   using: 'composite'
   steps:
     - uses: actions/checkout@v2
+      with:
+        fetch-depth: ${{ inputs.fetch-depth }}
 
     - name: Get node version
       id: node-version
