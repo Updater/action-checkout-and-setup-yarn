@@ -11,7 +11,7 @@ inputs:
     description: 'Package scope to point at GitHub Package Registry. (Defaults to owner of repository where action is being used)'
     default: ''
   node-version:
-    description: 'Node version to force usage of. (Defaults to value found in .tool-versions, .nvmrc, or "16"'
+    description: 'Node version to force usage of. (Defaults to value found in .tool-versions, .node-version, .nvmrc, or "16"'
     required: false
     default: ''
   fetch-depth:
@@ -34,6 +34,8 @@ runs:
           NODE_VERSION=${{ inputs.node-version }}
         elif [ -f .tool-versions ]; then
           NODE_VERSION=$(cat .tool-versions | grep nodejs | cut -d' ' -f2)
+        elif [ -f .node-version ]; then
+          NODE_VERSION=$(cat .node-version | tr -d 'v')
         elif [ -f .nvmrc ]; then
           NODE_VERSION=$(cat .nvmrc | tr -d 'v')
         else
