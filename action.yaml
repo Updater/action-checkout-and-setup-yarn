@@ -62,6 +62,11 @@ runs:
         restore-keys: |
           yarn-
 
+    - uses: actions/cache@v2
+      with:
+        path: node_modules
+        key: yarn-${{ hashFiles('yarn.lock') }}
+
     - name: setup .npmrc with private scope
       shell: bash
       run: |
