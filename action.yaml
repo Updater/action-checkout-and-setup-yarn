@@ -22,7 +22,10 @@ inputs:
     description: 'GH_TOKEN to use if not using the default'
     required: false
     default: "${{ github.token }}"
-
+  node_modules_path:
+    description: 'Other paths to cache based on the yarn lockfile'
+    required: false
+    default: 'node_modules'
 
 runs:
   using: 'composite'
@@ -70,7 +73,7 @@ runs:
 
     - uses: actions/cache@v2
       with:
-        path: node_modules
+        path: ${{ inputs.node_modules_path }}
         key: yarn-${{ hashFiles('yarn.lock') }}
 
     - name: setup .npmrc with private scope
