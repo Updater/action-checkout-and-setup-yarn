@@ -7,6 +7,10 @@ inputs:
   auth-token:
     description: 'Token for authenticating with GitHub Package Registry'
     required: true
+  fetch-depth:
+    description: 'Number of commits to fetch. 0 indicates all history for all branches and tags.'
+    required: false
+    default: 1
   github-package-registry-scope:
     description: 'Package scope to point at GitHub Package Registry. (Defaults to owner of repository where action is being used)'
     default: ''
@@ -14,10 +18,11 @@ inputs:
     description: 'Node version to force usage of. (Defaults to value found in .tool-versions, .node-version, .nvmrc, or "16"'
     required: false
     default: ''
-  fetch-depth:
-    description: 'Number of commits to fetch. 0 indicates all history for all branches and tags.'
+  token:
+    description: 'GH_TOKEN to use if not using the default'
     required: false
-    default: 1
+    default: "${{ github.token }}"
+
 
 runs:
   using: 'composite'
@@ -25,6 +30,7 @@ runs:
     - uses: actions/checkout@v2
       with:
         fetch-depth: ${{ inputs.fetch-depth }}
+        token: ${{ inputs.token }}
 
     - name: Get node version
       id: node-version
