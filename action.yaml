@@ -55,11 +55,18 @@ runs:
         cache: 'yarn'
         node-version: ${{ steps.node-version.outputs.node-version }}
 
+    - name: Get yarn cache directory path
+      id: yarn-cache-dir-path
+      shell: bash
+      run: |
+        echo "::set-output name=dir::$(yarn cache dir)"
+
     - uses: actions/cache@v2
       with:
         path: |
           **/node_modules
           /home/runner/.cache/Cypress
+           ${{ steps.yarn-cache-dir-path.outputs.dir }}
 
         key: yarn-modules-${{ hashFiles('**/yarn.lock') }}
         restore-keys: |
