@@ -68,7 +68,7 @@ runs:
           /home/runner/.cache/Cypress
            ${{ steps.yarn-cache-dir-path.outputs.dir }}
 
-        key: yarn-modules-${{ hashFiles('**/yarn.lock') }}
+        key: yarn-modules-${{ hashFiles('**/yarn.lock') }}-v2
         restore-keys: |
           yarn-
 
