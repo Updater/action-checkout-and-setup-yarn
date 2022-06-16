@@ -22,6 +22,10 @@ inputs:
     description: 'GH_TOKEN to use if not using the default'
     required: false
     default: "${{ github.token }}"
+  yarn-install:
+    description: "enable yarn install"
+    required: false
+    default: 'true'
 
 
 runs:
@@ -81,6 +85,7 @@ runs:
         echo "@${SCOPE}:registry=https://npm.pkg.github.com/" >> .npmrc
 
     - name: install dependencies
+      if: inputs.yarn-install == 'true'
       shell: bash
       run: |
         yarn install --frozen-lockfile --no-progress --non-interactive
