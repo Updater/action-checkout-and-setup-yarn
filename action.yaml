@@ -83,4 +83,4 @@ runs:
     - name: install dependencies
       shell: bash
       run: |
-        yarn install --frozen-lockfile --no-progress --non-interactive
+        yarn install --immutable
