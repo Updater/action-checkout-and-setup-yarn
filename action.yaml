@@ -22,10 +22,18 @@ inputs:
     description: 'GH_TOKEN to use if not using the default'
     required: false
     default: "${{ github.token }}"
-  node_modules_path:
+  node-modules-path:
     description: 'Other paths to cache based on the yarn lockfile'
     required: false
     default: 'node_modules'
+  node-modules-cache-version:
+    description: 'The version of the cache to use. Mostly used if you need to cache bust'
+    required: false
+    default: 'v1'
+  cache-node-modules:
+    description: 'If node modules caching should be done'
+    required: false
+    default: 'true'
 
 runs:
   using: 'composite'
@@ -35,7 +43,22 @@ runs:
         fetch-depth: ${{ inputs.fetch-depth }}
         token: ${{ inputs.token }}
 
+    - name: Cache Node Modules
+      id: node-modules-cache
+      if: inputs.cache-node-modules == 'true'
+      uses: actions/cache@v3
+      with:
+        path: ${{ inputs.node_modules_path }}
+        key: node-modules-${{ hashFiles('yarn.lock') }}-${{ inputs.node-modules-cache-version }}
+
+    - name: Notify Cache Hit And No Install Done
+      if: steps.node-modules-cache.outputs.cache-hit == 'true'
+      shell: bash
+      run: |
+        echo "🧶 yarn install skipped"
+
     - name: Get node version
+      if: steps.node-modules-cache.outputs.cache-hit != 'true'
       id: node-version
       shell: bash
       run: |
@@ -54,31 +77,28 @@ runs:
         echo "node-version=${NODE_VERSION}" >> $GITHUB_OUTPUT
 
     - uses: actions/setup-node@v2
+      if: steps.node-modules-cache.outputs.cache-hit != 'true'
       with:
         cache: 'yarn'
         node-version: ${{ steps.node-version.outputs.node-version }}
 
     - name: Get yarn cache directory path
+      if: steps.node-modules-cache.outputs.cache-hit != 'true'
       id: yarn-cache-dir-path
       shell: bash
       run: |
         echo "dir=$(yarn cache dir)" >> $GITHUB_OUTPUT
 
     - uses: actions/cache@v3
+      if: steps.node-modules-cache.outputs.cache-hit != 'true'
       with:
         path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
         key: ${{ runner.os }}-yarn-${{ hashFiles('**yarn.lock') }}
         restore-keys: |
           ${{ runner.os }}-yarn-
 
-    - name: Cache Node Modules
-      id: node-modules-cache
-      uses: actions/cache@v3
-      with:
-        path: ${{ inputs.node_modules_path }}
-        key: node-modules-${{ hashFiles('yarn.lock') }}-v2
-
     - name: setup .npmrc with private scope
+      if: steps.node-modules-cache.outputs.cache-hit != 'true'
       shell: bash
       run: |
         AUTH_TOKEN=${{ inputs.auth-token }}
@@ -97,9 +117,3 @@ runs:
         [ "$(expr "$(yarn -v)" \< '2')" = 1 ] &&
           yarn install --frozen-lockfile --no-progress --non-interactive ||
           yarn install --immutable
-
-    - name: Notify Cache Hit And No Install Done
-      if: steps.node-modules-cache.outputs.cache-hit == 'true'
-      shell: bash
-      run: |
-        echo "--CACHE HIT-- no yarn install was run --CACHE HIT--"
