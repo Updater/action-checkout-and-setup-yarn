@@ -71,7 +71,9 @@ runs:
         restore-keys: |
           ${{ runner.os }}-yarn-
 
-    - uses: actions/cache@v2
+    - name: Cache Node Modules
+      id: node-moules-cache
+      uses: actions/cache@v2
       with:
         path: ${{ inputs.node_modules_path }}
         key: yarn-${{ hashFiles('yarn.lock') }}
@@ -89,8 +91,15 @@ runs:
         echo "@${SCOPE}:registry=https://npm.pkg.github.com/" >> .npmrc
 
     - name: install dependencies
+      if: steps.node-modules-cache.outputs.cache-hit != 'true'
       shell: bash
       run: |
         [ "$(expr "$(yarn -v)" \< '2')" = 1 ] &&
           yarn install --frozen-lockfile --no-progress --non-interactive ||
           yarn install --immutable
+
+    - name: Notify Cache Hit And No Install Done
+      if: steps.node-modules-cache.outputs.cache-hit = 'true'
+      shell: bash
+      run: |
+        echo "--CACHE HIT-- no yarn install was run"
