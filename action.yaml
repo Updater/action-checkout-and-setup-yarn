@@ -91,7 +91,7 @@ runs:
         echo "@${SCOPE}:registry=https://npm.pkg.github.com/" >> .npmrc
 
     - name: install dependencies
-      if: steps.node-modules-cache.outputs.cache-hit != true
+      if: steps.node-modules-cache.outputs.cache-hit != 'true'
       shell: bash
       run: |
         [ "$(expr "$(yarn -v)" \< '2')" = 1 ] &&
@@ -99,7 +99,7 @@ runs:
           yarn install --immutable
 
     - name: Notify Cache Hit And No Install Done
-      if: steps.node-modules-cache.outputs.cache-hit == true
+      if: steps.node-modules-cache.outputs.cache-hit == 'true'
       shell: bash
       run: |
         echo "--CACHE HIT-- no yarn install was run --CACHE HIT--"
