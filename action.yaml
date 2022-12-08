@@ -76,7 +76,7 @@ runs:
       uses: actions/cache@v3
       with:
         path: ${{ inputs.node_modules_path }}
-        key: node-modules-${{ hashFiles('yarn.lock') }}
+        key: node-modules-${{ hashFiles('yarn.lock') }}-v2
 
     - name: setup .npmrc with private scope
       shell: bash
@@ -102,4 +102,4 @@ runs:
       if: steps.node-modules-cache.outputs.cache-hit == 'true'
       shell: bash
       run: |
-        echo "--CACHE HIT-- no yarn install was run"
+        echo "--CACHE HIT-- no yarn install was run --CACHE HIT--"
