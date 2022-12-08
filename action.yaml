@@ -48,7 +48,7 @@ runs:
       if: inputs.cache-node-modules == 'true'
       uses: actions/cache@v3
       with:
-        path: ${{ inputs.node_modules_path }}
+        path: ${{ inputs.node-modules-path }}
         key: node-modules-${{ hashFiles('yarn.lock') }}-${{ inputs.node-modules-cache-version }}
 
     - name: Notify Cache Hit And No Install Done
