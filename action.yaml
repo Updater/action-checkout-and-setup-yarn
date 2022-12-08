@@ -73,10 +73,10 @@ runs:
 
     - name: Cache Node Modules
       id: node-moules-cache
-      uses: actions/cache@v2
+      uses: actions/cache@v3
       with:
         path: ${{ inputs.node_modules_path }}
-        key: yarn-${{ hashFiles('yarn.lock') }}
+        key: node-modules-${{ hashFiles('yarn.lock') }}
 
     - name: setup .npmrc with private scope
       shell: bash
