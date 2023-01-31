@@ -48,7 +48,7 @@ runs:
           NODE_VERSION="16"
         fi
 
-        echo "::set-output name=node-version::${NODE_VERSION}"
+        echo "node-version=${NODE_VERSION}" >> $GITHUB_OUTPUT
 
     - uses: actions/setup-node@v2
       with:
@@ -59,7 +59,7 @@ runs:
       id: yarn-cache-dir-path
       shell: bash
       run: |
-        echo "::set-output name=dir::$(yarn cache dir)"
+        echo "dir=$(yarn cache dir)" >> $GITHUB_OUTPUT
 
     - uses: actions/cache@v2
       with:
