@@ -70,4 +70,4 @@ runs:
     - name: install dependencies
       shell: bash
       run: |
-        GH_REGISTRY_TOKEN=${{ inputs.auth-token }} yarn install --immutable --immutable-cache
+        GH_REGISTRY_TOKEN=${{ inputs.auth-token }} yarn install --immutable
