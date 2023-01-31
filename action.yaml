@@ -64,7 +64,6 @@ runs:
     - uses: actions/setup-node@v2
       if: steps.node-modules-cache.outputs.cache-hit != 'true'
       with:
-        cache: 'yarn'
         node-version: ${{ steps.node-version.outputs.node-version }}
 
     - name: install dependencies
