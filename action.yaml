@@ -29,7 +29,7 @@ inputs:
   node-modules-cache-version:
     description: 'The version of the cache to use. Mostly used if you need to cache bust'
     required: false
-    default: 'v1'
+    default: 'v2'
   cache-node-modules:
     description: 'If node modules caching should be done'
     required: false
