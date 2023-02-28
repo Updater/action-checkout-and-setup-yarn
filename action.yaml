@@ -58,7 +58,6 @@ runs:
         echo "🧶 yarn install skipped"
 
     - name: Get node version
-      if: steps.node-modules-cache.outputs.cache-hit != 'true'
       id: node-version
       shell: bash
       run: |
@@ -77,7 +76,6 @@ runs:
         echo "node-version=${NODE_VERSION}" >> $GITHUB_OUTPUT
 
     - uses: actions/setup-node@v2
-      if: steps.node-modules-cache.outputs.cache-hit != 'true'
       with:
         cache: 'yarn'
         node-version: ${{ steps.node-version.outputs.node-version }}
