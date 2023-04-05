@@ -42,6 +42,7 @@ runs:
       with:
         fetch-depth: ${{ inputs.fetch-depth }}
         token: ${{ inputs.token }}
+        lfs: true
 
     - name: Get node version
       id: node-version
