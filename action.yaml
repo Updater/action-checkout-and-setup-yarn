@@ -21,6 +21,7 @@ inputs:
   token:
     description: 'GH_TOKEN to use if not using the default'
     required: false
+    lfs: true
     default: "${{ github.token }}"
 
 
