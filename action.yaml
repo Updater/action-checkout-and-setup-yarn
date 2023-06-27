@@ -27,11 +27,11 @@ inputs:
 runs:
   using: 'composite'
   steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v2
       with:
         fetch-depth: ${{ inputs.fetch-depth }}
-        token: ${{ inputs.token }}
         lfs: true
+        token: ${{ inputs.token }}
 
     - name: Get node version
       id: node-version
@@ -49,7 +49,7 @@ runs:
           NODE_VERSION="16"
         fi
 
-        echo "node-version=${NODE_VERSION}" >> $GITHUB_OUTPUT
+        echo "::set-output name=node-version::${NODE_VERSION}"
 
     - uses: actions/setup-node@v2
       with:
@@ -60,14 +60,14 @@ runs:
       id: yarn-cache-dir-path
       shell: bash
       run: |
-        echo "dir=$(yarn cache dir)" >> $GITHUB_OUTPUT
+        echo "::set-output name=dir::$(yarn config get cacheFolder)"
 
-    - uses: actions/cache@v2
+    - uses: actions/cache@v3
       with:
         path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
-        key: yarn-${{ hashFiles('yarn.lock') }}
+        key: ${{ runner.os }}-yarn-${{ hashFiles('**yarn.lock') }}
         restore-keys: |
-          yarn-
+          ${{ runner.os }}-yarn-
 
     - name: setup .npmrc with private scope
       shell: bash
@@ -84,6 +84,4 @@ runs:
     - name: install dependencies
       shell: bash
       run: |
-        [ "$(expr "$(yarn -v)" \< '2')" = 1 ] && 
-          yarn install --frozen-lockfile --no-progress --non-interactive || 
-          yarn install --immutable
+        yarn install --immutable
