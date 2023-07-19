@@ -22,12 +22,16 @@ inputs:
     description: 'GH_TOKEN to use if not using the default'
     required: false
     default: "${{ github.token }}"
+  working-directory:
+    description: 'Directory to use for dependency install.'
+    required: false
+    default: ''
 
 
 runs:
   using: 'composite'
   steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
       with:
         fetch-depth: ${{ inputs.fetch-depth }}
         token: ${{ inputs.token }}
@@ -50,7 +54,7 @@ runs:
 
         echo "node-version=${NODE_VERSION}" >> $GITHUB_OUTPUT
 
-    - uses: actions/setup-node@v2
+    - uses: actions/setup-node@v3
       with:
         cache: 'yarn'
         node-version: ${{ steps.node-version.outputs.node-version }}
@@ -61,10 +65,10 @@ runs:
       run: |
         echo "dir=$(yarn cache dir)" >> $GITHUB_OUTPUT
 
-    - uses: actions/cache@v2
+    - uses: actions/cache@v3
       with:
         path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
-        key: yarn-${{ hashFiles('yarn.lock') }}
+        key: yarn-${{ hashFiles('**yarn.lock') }}
         restore-keys: |
           yarn-
 
@@ -82,7 +86,8 @@ runs:
 
     - name: install dependencies
       shell: bash
+      working-directory: ${{ inputs.working-directory }}
       run: |
-        [ "$(expr "$(yarn -v)" \< '2')" = 1 ] && 
-          yarn install --frozen-lockfile --no-progress --non-interactive || 
+        [ "$(expr "$(yarn -v)" \< '2')" = 1 ] &&
+          yarn install --frozen-lockfile --no-progress --non-interactive ||
           yarn install --immutable
