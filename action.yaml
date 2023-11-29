@@ -11,6 +11,10 @@ inputs:
     description: 'Number of commits to fetch. 0 indicates all history for all branches and tags.'
     required: false
     default: '1'
+  ref:
+    description: 'Github Checkout action ref'
+    required: false
+    default: ${{ github.event.pull_request.head.ref }}
   github-package-registry-scope:
     description: 'Package scope to point at GitHub Package Registry. (Defaults to owner of repository where action is being used)'
     default: ''
@@ -41,6 +45,7 @@ runs:
     - uses: actions/checkout@v4
       with:
         fetch-depth: ${{ inputs.fetch-depth }}
+        ref: ${{ inputs.ref }}
         token: ${{ inputs.token }}
         lfs: true
 
