@@ -10,7 +10,7 @@ inputs:
   fetch-depth:
     description: 'Number of commits to fetch. 0 indicates all history for all branches and tags.'
     required: false
-    default: 1
+    default: '1'
   github-package-registry-scope:
     description: 'Package scope to point at GitHub Package Registry. (Defaults to owner of repository where action is being used)'
     default: ''
@@ -38,7 +38,7 @@ inputs:
 runs:
   using: 'composite'
   steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v4
       with:
         fetch-depth: ${{ inputs.fetch-depth }}
         token: ${{ inputs.token }}
@@ -57,11 +57,11 @@ runs:
         elif [ -f .nvmrc ]; then
           NODE_VERSION=$(cat .nvmrc | tr -d 'v')
         else
-          NODE_VERSION="16"
+          NODE_VERSION="lts/*"
         fi
         echo "::set-output name=node-version::${NODE_VERSION}"
 
-    - uses: actions/setup-node@v2
+    - uses: actions/setup-node@v4
       with:
         node-version: ${{ steps.node-version.outputs.node-version }}
 
