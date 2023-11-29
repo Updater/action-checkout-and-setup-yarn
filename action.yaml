@@ -43,6 +43,8 @@ runs:
         fetch-depth: ${{ inputs.fetch-depth }}
         token: ${{ inputs.token }}
         lfs: true
+      run: |
+        echo "Fetching ${{ inputs.fetch-depth }} commits"
 
     - name: Get node version
       id: node-version
