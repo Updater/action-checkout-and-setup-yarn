@@ -1,37 +1,36 @@
 ---
-name: 'Checkout and Set Up Yarn'
+name: "Checkout and Set Up Yarn"
 
-description: 'Check out the repo, set up Node and Yarn with private registry support, and then install dependencies using Yarn.'
+description: "Check out the repo, set up Node and Yarn with private registry support, and then install dependencies using Yarn."
 
 inputs:
   auth-token:
-    description: 'Token for authenticating with GitHub Package Registry'
+    description: "Token for authenticating with GitHub Package Registry"
     required: true
   fetch-depth:
-    description: 'Number of commits to fetch. 0 indicates all history for all branches and tags.'
+    description: "Number of commits to fetch. 0 indicates all history for all branches and tags."
     required: false
     default: 1
   github-package-registry-scope:
-    description: 'Package scope to point at GitHub Package Registry. (Defaults to owner of repository where action is being used)'
-    default: ''
+    description: "Package scope to point at GitHub Package Registry. (Defaults to owner of repository where action is being used)"
+    default: ""
   node-version:
     description: 'Node version to force usage of. (Defaults to value found in .tool-versions, .node-version, .nvmrc, or "16"'
     required: false
-    default: ''
+    default: ""
   token:
-    description: 'GH_TOKEN to use if not using the default'
+    description: "GH_TOKEN to use if not using the default"
     required: false
     default: "${{ github.token }}"
   working-directory:
-    description: 'Directory to use for dependency install.'
+    description: "Directory to use for dependency install."
     required: false
-    default: ''
-
+    default: ""
 
 runs:
-  using: 'composite'
+  using: "composite"
   steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
       with:
         fetch-depth: ${{ inputs.fetch-depth }}
         token: ${{ inputs.token }}
@@ -56,7 +55,7 @@ runs:
 
     - uses: actions/setup-node@v3
       with:
-        cache: 'yarn'
+        cache: "yarn"
         node-version: ${{ steps.node-version.outputs.node-version }}
 
     - name: Get yarn cache directory path
@@ -65,7 +64,7 @@ runs:
       run: |
         echo "dir=$(yarn cache dir)" >> $GITHUB_OUTPUT
 
-    - uses: actions/cache@v3
+    - uses: actions/cache@v4
       with:
         path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
         key: yarn-${{ hashFiles('**yarn.lock') }}
